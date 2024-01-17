@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+    <p>equivalent to the number of URLs returned by the initial Web query. So, given <b>n</b> input vectors, the feedforward layer would need to be applied <b>n</b> times, once for each input vector<b>a</b><sup>1</sup>. As a result, instead of a single valued vector <b>a</b><sup>1</sup> , the system produces a matrix of vectors <b>A</b><sup>1</sup> . Hence, the output of the feedforward layer is just the result of the matrix multiplication of the matrix of the input vectors P<sup>1</sup>with each of the prototype vectors in the matrix <b>W</b><sup>1</sup> . Assuming that the system has no bias vector, the feedforward layer can be described by the formula:</p>
+    <p>&nbsp;&nbsp;&nbsp;<b>A<sup>1</sup>=purelin(W<sup>1</sup> P<sup>1</sup>) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3.4)</b></p>
+    <p>The recurrent layer performs the competition between each of the elements in the matrix <b>A<sup>1</sup></b>  produced as the output from feedforward layer. Hence, this layer can be described mathematically as:</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;<b>A<sup>2</sup> (0) = A<sup>1</sup>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;(3.5)</b></p>
+     <p>&nbsp;&nbsp;<b>A<sup>2</sup>(t+1)=poslin(W<sup>2</sup>A<sup>2</sup>t))&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3.6)</b></p>
+    
+    <p>As a result, the output from the second layer of the neural network is a set of vectors
+representing which prototype vector most closely matches each input vector. Recall,
+though, that the objective of this system was to determine which of the Web documents
+(input vectors) most closely matches the selected document type (prototype vector).
+Fortunately, the output from the second layer works rather well in solving this problem.
+Consider that each of the columns represents one output vector. Each of these vectors
+contain elements containing all zeros but one. Additionally, since the document type is
+known, and the applicable corresponding prototype vector is known, all that needs be
+done is to extract each of the vectors from the output matrix <b>A<sup>2</sup></b> that contain a nonzero
+value in the nonzero <b>i<sup>th</sup></b> element. This set of vectors now represents all the Web
+documents that most closely match the selected document type. In addition, the vector
+that has the largest value matches the prototype vector better than any other vector.
+Hence, sorting the values in each of the vectors, from highest to lowest, provides a new
+ranking of the Web documents. Finally, after sorting, the system simply outputs the
+URLs and descriptions captured in the initial search engine query, but in the order
+specified by the neural network.</p>
+        <h2>Unsupervised Competitive Neural Network</h2>
+        <p>The unsupervised competitive neural network replaces the recurrent layer in the
+Hamming network with a competition transfer function. Like the Hamming network, this
+competition layer still identifies the largest value in the vectors produced by the
+feedforward network. However, instead of applying the recurrence equation on the
+output vectors, the competition transfer function simply produces a vector of all 0’s,
+except for the entry that contained the largest value in the vector produced by the
+feedforward network, which it sets to 1. In addition, the objective of the unsupervised
+network is significantly different than that of a supervised network. The goal of the
+supervised network is to match the input vectors to the predetermined prototype vectors.
+However, in the unsupervised network, the prototype vectors are not known in advance.
+Instead, the input vectors are actually used to train the weight matrix. This was
+accomplished using the Kohonen learning rule (Hagan et al., 1996):</p>
+ 
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><sub><i>i</i></sub>w(q)=<sub><i>i</i></sub>w(q-1)+α(p(q)-<sub><i>i</i></sub>w(q-1))&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for i = i*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3.7)</b></p>
+        <p>and</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><sub><i>i</i></sub>w(q) = <sub><i>i</i></sub>w(q-1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for i != i*</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>(3.8)</b></p>
+        
+        <p>In equation (3.7) and (3.8), <b>α</b> represents a real value between 0 and 1 called the learning rate, <b>p(q)</b> represents the input vector,<i>i</i><b> w(q) </b>and<i>i</i><b>w(q-1)</b> represent the <b>i<sup>th</sup></b> row in the weight matrix at time <b>q</b> and <b>q-1</b>, respectively, and <b>i*</b> represents the row that had the largest value in the vector produced by the feedforward network, and hence the row that contained the 1 in the output vector. In general terms, all the vectors in the weight matrix at time q will remain the same as they were at time <b>q - 1</b> except for the row in the weight matrix that won the competition. The values in this row of the weight matrix will move from their current values at time <b>q - 1,</b> toward the input vector at time <b>q</b>. How quickly the row in the weight matrix moves towards the input vector is a factor of the learning rate <b>α.</b> For example, if <b>α=1</b>, then from (3.7) we can see that row i in the weight matrix would be set to the values of the input vector. However, if <b>α=0</b>, then no change would ever result. Clearly, the value of the learning rate is of utmost importance for this type of neural network.</p>
+        <p>The implementation of the unsupervised competitive neural network for the queryby-structure system was fairly straightforward. First, each Web document is transformed
+into an input vector. The only difference between this input vector and the input vector
+in the Hamming neural network is that each element contains a numeric value containing
+the number of occurrences of a specific word within the Web document (rather than a
+Boolean value), provided that the word was contained within the appropriate structure
+tags, as was described for the Hamming network. After being created, each input vector
+is then normalized. In order to initialize the network, a weight matrix for the prototype
+vectors was randomly generated. The values taken on by each entry was a real number
+between -1 to 1, inclusive.</p>
+        <p>Once the network was properly initialized, the process of training the weight matrix
+was simply a matter of randomly selecting an input vector from the set of input vectors
+of Web documents, applying the competitive layer in the neural network to find the
+largest value in the vectors produced by the feedforward layer, and updating the
+appropriate row in the weight matrix using the Kohonen rule. This process was repeated
+for a predetermined number of iterations, at which time the final weight vectors have been
+formed. Using these weight vectors, each input is classified and placed into one of n class
+vector sets. These class vector sets make up the final results of the neural network, where
+users are presented with the ordered results in each class instead of all the results ordered
+together in one list.</p>
+        <h2>Experimental Performance and Results</h2>
+    
+        <p>Preliminary tests of the Hamming neural network system showed promising results.Initially, four document types were selected: resumes, conference papers, news articles,and e-commerce Web documents. Obviously, there could be an infinite number of different document types, along with variations within those types, but the objective was
+not to classify as many different types of documents as possible, but rather to simply test the feasibility of using neural networks to improve query-by-structure performance.The following is the list of words used to construct the feature vectors for the initial testing of the system: abstract, activities, bibliography, business, by, buy, cart, conclusion, education, experience, introduction, mall, MasterCard, news, objective, price, purchase, related, references, resume, shop, sports, store, Visa, vitae, work. The HTML tags utilized by the system were: bold (), strong (), emphasis
+(), underline (), heading (), font (), and italics (). Hence,four prototype vectors were utilized, with each one representing a different document type. Each vector contained only Boolean values that represented whether or not one of the words specified above was expected to appear within a given structure context inside that specific type of document. According to the word ordering above, the four prototype vectors utilized are:
+</p><br>
+        <center>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resume document = (0,1,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,1,1,0,0,0,0,1,1)</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;research paper = (1,0,1,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,0,1)</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;news article = (0,0,0,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0)</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e-commerce document=(0,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,1,0,0,0,1,0,1,1,0,0)</p>
+    </center>
+        <p>As an example, consider a simple query that was applied to the system that retrieved
+only 10 URLs looking for a <i>resume</i> document type using the keywords: “Computer
+Science.” The commercial search engine results for this query placed a career services
+Web site first and a Computer Science program’s students resume <i>repository</i> second.
+After converting these results to input vectors and filtering them through the neural
+network, the career services Web site ended up ranked 7<sup>th</sup>, and the resume repository
+ended up dead last at 10<sup>th</sup>. In addition, in between these two documents were a very
+poorly structured resume and a Web page that simply contained a note stating that if you
+were interested in that individual’s resume, you could contact him via e-mail. At the top
+of the rankings were Web documents containing actual resumes.</p>
+        <p>Other experiments were performed with different keywords, document types, and
+a varying numbers of URLs returned in the result with similar results to the example above.
+Table 2 compares the results of the system to the commercial search engine results for
+some of these tests. A brute force approach of viewing each document to determine if
+it actually was of the desired type was necessary.</p>
+        <p>The performance of the unsupervised competitive neural network was not as
+consistent as that of the supervised Hamming network. The hope for this network is that
+the input vectors will be clustered based on similar structure. However, much of the
+preliminary testing resulted in most documents being placed in only one or two classes
+(currently the system can only cluster to four classes). There are several contributing
+factors to these sporadic results. First, unlike the supervised neural network that creates
+the weight matrix based on the prototype vectors, this network randomly generates its
+weight matrix. As a result, each test yields different results. Secondly, the number of
+times the network iterates also plays a role in determining the results. This value can only
+be determined through extensive testing. Currently, the number of iterations performed
+</p>
+<center><img src="Screenshot 2024-01-17 133030.jpg"></center>
+        <p>is equal to three times the number of input vectors. Another variable factor in this network
+is the choice of the learning rate. This value ranges between 0 and 1, with higher values
+resulting in fast but unstable learning and lower values resulting in slow but stable
+learning. Once again, the optimal value for the learning rate can only be determined
+through extensive testing. Finally, a third issue is with the creation of the input vectors.
+As discussed earlier, these vectors are generated based on document structure. Hence,
+creating input vectors that properly distinguish between different types of documents
+is paramount to the performance of the network.</p>
+        <center><h2>FUTURE TRENDS</h2></center>
+        <p>A significant amount of research has already been done regarding the query-bystructure approach. The CLaP system was initially created to determine the feasibility
+of the query-by-structure approach. The system allowed the user to dynamically search
+the Web for documents based on an elaborate set of structure criteria. Even from the early
+testing with the CLaP system, it became clear that the results indicated that the use of
+document structure could improve query results. However, the queries, which required
+the user to specify exactly which tags the search words would appear between, were much
+too cumbersome for the user to make the system usable. So, although exhibiting
+promising results, the CLaP system was essentially abandoned in favor of systems using
+the neural network query-by-structure approach.</p>
+        <p>The results from the testing of the query-by-structure approach using neural
+networks has been promising enough to warrant further research, and development on
+a more enhanced version of the systems has already begun. The neural network systems
+did eliminate the need for extensive structure information during the query process. It
+does, however, require that the user select a document type. Consequently, the
+document structure criteria was predetermined by the system. However, the notion of
+how a specific type of document should look is something that should really be
+determined by the user of the system rather than the designer of the system. As a result,
+future enhancements to the system will allow the user to specify structure criteria, not
+by providing detailed structure information, but rather by providing examples of
+document types. Hence, the prototype vectors for the system will be constructed not
+by the designers of the system, but rather dynamically, based on the examples provided
+by the users. In simplistic terms, the user will be able to say, “Give me a document that
+looks like this but contains these words.”</p>
+        <p>In addition to structure, another new trend to consider in the query process is word
+semantics. According to the online American Heritage® Dictionary (http://
+education.yahoo.com/reference/dictionary/), the definition of the word “semantics” is
+“the meaning or the interpretation of a word, sentence, or other language form.” It should
+be noted that the meaning of a word and the interpretation of a word are two entirely
+different things altogether. For example, the word “screen” can have several different
+meanings depending upon to what it is referring. A computer has a screen; a window
+can have a screen; a movie theater has a screen; and, during the hiring process, it is
+standard practice to screen an applicant. Hence, the interpretation of the word “screen”
+is entirely dependent upon the context in which the word is used. Additionally, several
+different words could have the same meaning. For example, depending upon the context,
+the words auto, automobile, car, and vehicle could be interpreted as the same thing. Most
+search engines today, unless specifically designed to do so, cannot handle the semantics
+of the words. As a result, although a search issued on a commercial search engine will
+result in a significant number of purportedly relevant pages, in actuality, the results will
+likely contain several irrelevant pages as a result of one or more of the search words
+having different meanings. In addition, since there could be one or more words that has
+a meaning identical to one of the search words, several relevant pages will actually not
+be returned by the search engine.</p>
+        <p>Unfortunately, identifying word semantics is an extremely difficult task. However,
+a more feasible approach might be to instead identify document semantics. On a basic
+</p>
+    
+    </body>
+</html>
